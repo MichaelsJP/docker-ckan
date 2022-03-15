@@ -2,10 +2,24 @@ FROM openknowledge/ckan-base:2.9
 
 MAINTAINER Your Name Here <you@example.com>
 
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY ckan.nginx /etc/nginx/sites-available/ckan.conf
+COPY entrypoint.sh /entrypoint.sh
+
+RUN apk add --no-cache nginx && \
+    rm -rf /etc/nginx/sites-enabled/default && \
+    mkdir /etc/nginx/sites-enabled && \
+    mkdir -p /run/nginx && \
+    mkdir -p /var/log/nginx && \
+    mkdir -p /var/log/ckan && \
+    touch /run/nginx/nginx.pid && \
+    ln -s /etc/nginx/sites-available/ckan.conf /etc/nginx/sites-enabled/ckan && \
+    chmod +x /entrypoint.sh
+
 # Set timezone
 ARG TZ
-RUN echo $TZ > /etc/timezone
-RUN cp /usr/share/zoneinfo/$TZ /etc/localtime
+RUN echo $TZ > /etc/timezone && \
+    cp /usr/share/zoneinfo/$TZ /etc/localtime
 
 # Install any extensions needed by your CKAN instance
 # (Make sure to add the plugins to CKAN__PLUGINS in the .env file)
@@ -19,7 +33,7 @@ RUN cp /usr/share/zoneinfo/$TZ /etc/localtime
 
 # Apply any patches needed to CKAN core or any of the built extensions (not the
 # runtime mounted ones)
-# See https://github.com/okfn/docker-ckan#applying-patches
+# See https://github.com/okfn/docker-ckan#applying-patchesFF
 COPY patches ${APP_DIR}/patches
 
 RUN for d in $APP_DIR/patches/*; do \
@@ -29,3 +43,6 @@ RUN for d in $APP_DIR/patches/*; do \
             done ; \
         fi ; \
     done
+
+
+CMD ["/entrypoint.sh"]
