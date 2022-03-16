@@ -2,6 +2,38 @@ version: "3"
 
 services:
 
+  proxy:
+    image: traefik:v2.6.1
+    container_name: "ckan-traefik"
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    depends_on:
+      - ckan
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8090:8080"
+    command:
+      - --providers.docker
+      - --providers.docker.exposedbydefault=false
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      #- --certificatesresolvers.myresolver.acme.tlschallenge=false
+      #- --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      #- --certificatesresolvers.myresolver.acme.email=${ACME_CONTACT?Variable not set}
+      #- --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      # Enable the Dashboard and API in insecure mode for local development
+      - --api.insecure=true
+      # Enable the access log, with HTTP requests
+      - --accesslog
+      # Enable the Traefik log, for configurations and errors
+      - --log
+    labels:
+      - traefik.enable=true
   ckan:
     container_name: ckan
     build:
@@ -16,15 +48,27 @@ services:
       - solr
       - redis
       - datapusher
-    ports:
-      - "0.0.0.0:${CKAN_PORT}:5000"
-      - "0.0.0.0:8080:8080"
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
     volumes:
       - ckan_storage:/var/lib/ckan
       - ./logs/nginx:/var/log/nginx
+    labels:
+      - traefik.enable=true
+      - "traefik.http.routers.ckan.entrypoints=web"
+      - "traefik.http.routers.ckan.rule=Host(`${DOMAIN?Variable not set}`)"
+      - traefik.port=8080
+#      - "traefik.http.routers.ckan-http.middlewares=ckan-https"
+#      - "traefik.http.middlewares.ckan-https.redirectscheme.scheme=https"
+#      - "traefik.http.routers.ckan.entrypoints=websecure"
+#      - "traefik.http.routers.ckan.rule=Host(`${DOMAIN?Variable not set}`)"
+#      - "traefik.http.routers.ckan.tls.certresolver=myresolver"
 
   datapusher:
     container_name: datapusher
+    networks:
+      - default
     build:
       context: datapusher/
     ports:
@@ -32,6 +76,8 @@ services:
 
   db:
     container_name: db
+    networks:
+      - default
     build:
       context: postgresql/
       args:
@@ -45,6 +91,8 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   solr:
+    networks:
+      - default
     container_name: solr
     build:
       context: solr/
@@ -52,6 +100,8 @@ services:
       - solr_data:/opt/solr/server/solr/ckan/data/index
 
   redis:
+    networks:
+      - default
     container_name: redis
     image: redis:alpine
 
@@ -59,3 +109,8 @@ volumes:
   ckan_storage:
   pg_data:
   solr_data:
+
+networks:
+  traefik-public:
+    driver: bridge
+    name: traefik-public

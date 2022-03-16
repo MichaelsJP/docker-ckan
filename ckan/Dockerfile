@@ -10,11 +10,15 @@ RUN apk add --no-cache nginx && \
     rm -rf /etc/nginx/sites-enabled/default && \
     mkdir /etc/nginx/sites-enabled && \
     mkdir -p /run/nginx && \
-    mkdir -p /var/log/nginx && \
     mkdir -p /var/log/ckan && \
     touch /run/nginx/nginx.pid && \
     ln -s /etc/nginx/sites-available/ckan.conf /etc/nginx/sites-enabled/ckan && \
     chmod +x /entrypoint.sh
+
+RUN rm -rf /var/log/nginx/ckan && \
+    mkdir -p /var/log/nginx/ckan && \
+    touch /var/log/nginx/ckan/error.log && \
+    touch /var/log/nginx/ckan/access.log
 
 # Set timezone
 ARG TZ
@@ -44,5 +48,6 @@ RUN for d in $APP_DIR/patches/*; do \
         fi ; \
     done
 
+EXPOSE 8080
 
 CMD ["/entrypoint.sh"]
