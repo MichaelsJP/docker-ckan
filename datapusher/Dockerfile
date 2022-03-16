@@ -36,6 +36,7 @@ RUN mkdir ${APP_DIR}/src && cd ${APP_DIR}/src && \
     git clone -b ${GIT_BRANCH} --depth=1 --single-branch ${GIT_URL} && \
     cd datapusher && \
     python3 setup.py install && \
+    export MAKEFLAGS="-j$(nproc)" && \
     pip3 install --no-cache-dir -r requirements.txt
 
 
