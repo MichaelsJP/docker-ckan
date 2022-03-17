@@ -18,8 +18,8 @@ RUN apk add --no-cache nginx && \
 RUN rm -rf /var/log/nginx/ckan && \
     mkdir -p /var/log/nginx/ckan && \
     chown -R nginx:nginx /var/log/nginx && \
-    touch /var/log/nginx/ckan/error.log && \
-    touch /var/log/nginx/ckan/access.log
+    touch /var/log/nginx/error.log && \
+    touch /var/log/nginx/access.log
 
 # Set timezone
 ARG TZ
