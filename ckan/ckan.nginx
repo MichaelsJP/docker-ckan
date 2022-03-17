@@ -8,8 +8,8 @@ server {
     client_max_body_size 250M;
     large_client_header_buffers 4 32k;
 
-    error_log /var/log/nginx/ckan/error.log warn;
-    access_log /var/log/nginx/ckan/access.log;
+    error_log /var/log/nginx/error.log warn;
+    access_log /var/log/nginx/access.log;
 
 
 
