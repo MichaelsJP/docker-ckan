@@ -88,10 +88,10 @@ services:
       - traefik.http.services.${STACK_NAME?Variable not set}-ckan.loadbalancer.server.port=8080
       - traefik.http.services.${STACK_NAME?Variable not set}-ckan.loadBalancer.passHostHeader=true
       - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-http.rule=Host(`${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-http.entrypoints=http
+      - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-http.entrypoints=web
       - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-https.rule=Host(`${DOMAIN?Variable not set}`)
       - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-https.tls.certresolver=myresolver
-      - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-https.entrypoints=https
+      - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-https.entrypoints=websecure
 
 
   datapusher:
