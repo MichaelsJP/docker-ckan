@@ -34,7 +34,7 @@ services:
       # Allow insecure API
       - --api.insecure=true
       - --entrypoints.web.address=:80
-      - --entryPoints='Name:websecure Address::443 Compress:true TLS TLS.MinVersion:VersionTLS12 TLS.SniStrict:true TLS.CipherSuites:TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA'
+      - --entrypoints.websecure.address=:443
 
       - --certificatesresolvers.myresolver.acme.email=${ACME_CONTACT?Variable not set}
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
