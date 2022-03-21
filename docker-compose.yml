@@ -105,7 +105,7 @@ services:
       - traefik.http.middlewares.ckan-security-headers.headers.customresponseheaders.X-Robots-Tag=none,noarchive,nosnippet,notranslate,noimageindex,
       #- traefik.http.middlewares.ckan-csp.headers.contentsecuritypolicy=default-src 'none'; img-src 'self' https://${DOMAIN?Variable not set}; script-src 'self'; style-src 'self'
       - traefik.http.routers.ckan-https.middlewares=ckan-security-headers, ckan-www-redirect-https, ckan-www-redirect-http
-
+      - traefik.http.routers.ckan-https.tls.options=mintls12@file
   datapusher:
     container_name: datapusher
     networks:
