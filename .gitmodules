@@ -1,0 +1,3 @@
+[submodule "globalcookieconsent"]
+	path = globalcookieconsent
+	url = git@github.com:MichaelsJP/globalcookieconsent.git
