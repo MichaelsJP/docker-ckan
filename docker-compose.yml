@@ -11,6 +11,7 @@ services:
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ".ckan/tls.toml:/configuration/tls.toml:ro"
     depends_on:
       - ckan
     ports:
@@ -20,6 +21,8 @@ services:
     command:
       # Enable Docker in Traefik, so that it reads labels from Docker services
       - --providers.docker
+      - --providers.file.directory=/configuration/
+      - --providers.file.watch=true
       # Add a constraint to only use services with the label for this stack
       # from the env var TRAEFIK_TAG
       # - --providers.docker.constraints=Label(`traefik.constraint-label-stack`, `${TRAEFIK_TAG?Variable not set}`)
