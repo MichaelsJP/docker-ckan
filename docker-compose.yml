@@ -35,7 +35,7 @@ services:
       # Enable the Dashboard and API
       - --api
       # Allow insecure API
-      - --api.insecure=true
+      - --api.insecure=false
       - --entrypoints.web.address=:80
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
       - --entrypoints.web.http.redirections.entryPoint.scheme=https
