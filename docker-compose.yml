@@ -49,7 +49,7 @@ services:
       - --certificatesresolvers.myresolver.acme.httpchallenge=${ISSUE_HTTPS?Variable not set}
     labels:
       # Enable Traefik for this service, to make it available in the public network
-      - traefik.enable=true
+      - traefik.enable=false
   ckan:
     container_name: ckan
     build:
