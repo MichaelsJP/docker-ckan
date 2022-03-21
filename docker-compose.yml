@@ -47,42 +47,6 @@ services:
     labels:
       # Enable Traefik for this service, to make it available in the public network
       - traefik.enable=true
-      # Define the port inside of the Docker service to use
-      - traefik.http.services.${STACK_NAME?Variable not set}-proxy.loadbalancer.server.port=8080
-      - traefik.http.services.${STACK_NAME?Variable not set}-proxy.loadBalancer.passHostHeader=true
-      # Handle domain with and without "www" to redirect to only one
-      # To disable www redirection remove the next line
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect-http.redirectregex.regex=^http?://(www.)?(${DOMAIN?Variable not set})/(.*)
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect-https.redirectregex.regex=^https?://(www.)?(${DOMAIN?Variable not set})/(.*)
-      # Redirect a domain with www to non-www
-      # To disable it remove the next line
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect-http.redirectregex.replacement=http://${DOMAIN?Variable not set}/$${3}
-      - traefik.http.middlewares.${STACK_NAME?Variable not set}-www-redirect-https.redirectregex.replacement=https://${DOMAIN?Variable not set}/$${3}
-      # Middleware to redirect www, to disable it remove the next line
-      - traefik.http.routers.${STACK_NAME?Variable not set}-proxy-http.middlewares=${STACK_NAME?Variable not set}-www-redirect-http
-      - traefik.http.routers.${STACK_NAME?Variable not set}-proxy-https.middlewares=${STACK_NAME?Variable not set}-www-redirect-https
-      # Middleware to redirect www, and redirect HTTP to HTTPS
-      # to disable www redirection remove the section: ${STACK_NAME?Variable not set}-www-redirect,
-      - traefik.http.middlewares.ckan-security-headers.headers.accesscontrolallowmethods=GET, OPTIONS, PUT
-      - traefik.http.middlewares.ckan-security-headers.headers.accesscontrolmaxage=100
-      - traefik.http.middlewares.ckan-security-headers.headers.addvaryheader=true
-      - traefik.http.middlewares.ckan-security-headers.headers.hostsproxyheaders=X-Forwarded-Host
-      - traefik.http.middlewares.ckan-security-headers.headers.sslredirect=true
-      - traefik.http.middlewares.ckan-security-headers.headers.sslproxyheaders.X-Forwarded-Proto=https
-      - traefik.http.middlewares.ckan-security-headers.headers.stsseconds=63072000
-      - traefik.http.middlewares.ckan-security-headers.headers.stsincludesubdomains=true
-      - traefik.http.middlewares.ckan-security-headers.headers.stspreload=true
-      - traefik.http.middlewares.ckan-security-headers.headers.forcestsheader=true
-      - traefik.http.middlewares.ckan-security-headers.headers.framedeny=true
-      - traefik.http.middlewares.ckan-security-headers.headers.contenttypenosniff=true
-      - traefik.http.middlewares.ckan-security-headers.headers.browserxssfilter=true
-      - traefik.http.middlewares.ckan-security-headers.headers.referrerpolicy=same-origin
-      - traefik.http.middlewares.ckan-security-headers.headers.featurepolicy=camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'; vr 'none';
-      - traefik.http.middlewares.ckan-security-headers.headers.customresponseheaders.X-Robots-Tag=none,noarchive,nosnippet,notranslate,noimageindex,
-      #- traefik.http.middlewares.ckan-csp.headers.contentsecuritypolicy=default-src 'none'; img-src 'self' https://${DOMAIN?Variable not set}; script-src 'self'; style-src 'self'
-      - traefik.http.routers.ckan-https.middlewares=ckan-security-headers
-
-
   ckan:
     container_name: ckan
     build:
@@ -107,14 +71,40 @@ services:
       - ./logs/nginx:/var/log/nginx
     labels:
       - traefik.enable=true
-      - traefik.http.services.${STACK_NAME?Variable not set}-ckan.loadbalancer.server.port=8080
-      - traefik.http.services.${STACK_NAME?Variable not set}-ckan.loadBalancer.passHostHeader=true
-      - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-http.rule=Host(`${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-http.entrypoints=wen
-      - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-https.rule=Host(`${DOMAIN?Variable not set}`)
-      - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-https.tls.certresolver=myresolver
-      - traefik.http.routers.${STACK_NAME?Variable not set}-ckan-https.entrypoints=https
-
+      - traefik.http.services.ckan.loadbalancer.server.port=8080
+      - traefik.http.services.ckan.loadBalancer.passHostHeader=true
+      - traefik.http.routers.ckan-http.rule=Host(`${DOMAIN?Variable not set}`)
+      - traefik.http.routers.ckan-http.entrypoints=web
+      - traefik.http.routers.ckan-https.rule=Host(`${DOMAIN?Variable not set}`)
+      - traefik.http.routers.ckan-https.tls.certresolver=myresolver
+      - traefik.http.routers.ckan-https.entrypoints=websecure
+      # Handle domain with and without "www" to redirect to only one
+      # To disable www redirection remove the next line
+      - traefik.http.middlewares.ckan-www-redirect-http.redirectregex.regex=^http?://(www.)?(${DOMAIN?Variable not set})/(.*)
+      - traefik.http.middlewares.ckan-www-redirect-https.redirectregex.regex=^https?://(www.)?(${DOMAIN?Variable not set})/(.*)
+      # Redirect a domain with www to non-www
+      # To disable it remove the next line
+      - traefik.http.middlewares.ckan-www-redirect-http.redirectregex.replacement=http://${DOMAIN?Variable not set}/$${3}
+      - traefik.http.middlewares.ckan-www-redirect-https.redirectregex.replacement=https://${DOMAIN?Variable not set}/$${3}
+      # to disable www redirection remove the section: www-redirect,
+      - traefik.http.middlewares.ckan-security-headers.headers.accesscontrolallowmethods=GET, OPTIONS, PUT
+      - traefik.http.middlewares.ckan-security-headers.headers.accesscontrolmaxage=100
+      - traefik.http.middlewares.ckan-security-headers.headers.addvaryheader=true
+      - traefik.http.middlewares.ckan-security-headers.headers.hostsproxyheaders=X-Forwarded-Host
+      - traefik.http.middlewares.ckan-security-headers.headers.sslredirect=true
+      - traefik.http.middlewares.ckan-security-headers.headers.sslproxyheaders.X-Forwarded-Proto=https
+      - traefik.http.middlewares.ckan-security-headers.headers.stsseconds=63072000
+      - traefik.http.middlewares.ckan-security-headers.headers.stsincludesubdomains=true
+      - traefik.http.middlewares.ckan-security-headers.headers.stspreload=true
+      - traefik.http.middlewares.ckan-security-headers.headers.forcestsheader=true
+      - traefik.http.middlewares.ckan-security-headers.headers.framedeny=true
+      - traefik.http.middlewares.ckan-security-headers.headers.contenttypenosniff=true
+      - traefik.http.middlewares.ckan-security-headers.headers.browserxssfilter=true
+      - traefik.http.middlewares.ckan-security-headers.headers.referrerpolicy=same-origin
+      - traefik.http.middlewares.ckan-security-headers.headers.featurepolicy=camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'; vr 'none';
+      - traefik.http.middlewares.ckan-security-headers.headers.customresponseheaders.X-Robots-Tag=none,noarchive,nosnippet,notranslate,noimageindex,
+      #- traefik.http.middlewares.ckan-csp.headers.contentsecuritypolicy=default-src 'none'; img-src 'self' https://${DOMAIN?Variable not set}; script-src 'self'; style-src 'self'
+      - traefik.http.routers.ckan-https.middlewares=ckan-security-headers, ckan-www-redirect-https, ckan-www-redirect-http
 
   datapusher:
     container_name: datapusher
