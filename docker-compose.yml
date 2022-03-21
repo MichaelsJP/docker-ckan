@@ -87,7 +87,8 @@ services:
       - traefik.http.middlewares.ckan-www-redirect-http.redirectregex.replacement=http://${DOMAIN?Variable not set}/$${3}
       - traefik.http.middlewares.ckan-www-redirect-https.redirectregex.replacement=https://${DOMAIN?Variable not set}/$${3}
       # to disable www redirection remove the section: www-redirect,
-      - traefik.http.middlewares.ckan-security-headers.headers.accesscontrolallowmethods=GET, OPTIONS, PUT
+      - traefik.http.middlewares.ckan-security-headers.headers.accesscontrolallowmethods=GET, OPTIONS, PUT, POST
+      - traefik.http.middlewares.ckan-security-headers.headers.accessControlAllowCredentials=true
       - traefik.http.middlewares.ckan-security-headers.headers.accesscontrolmaxage=100
       - traefik.http.middlewares.ckan-security-headers.headers.addvaryheader=true
       - traefik.http.middlewares.ckan-security-headers.headers.hostsproxyheaders=X-Forwarded-Host
