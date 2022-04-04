@@ -27,4 +27,11 @@ server {
           proxy_cache_valid 30m;
           proxy_cache_key $host$scheme$proxy_host$request_uri;
     }
+
+    location /additionalfonts/LTe50136.ttf {
+        alias /var/lib/ckan/webassets/vendor/LTe50136.ttf;
+        gzip_static on;
+        expires 24h;
+        add_header Cache-Control public;
+    }
 }
