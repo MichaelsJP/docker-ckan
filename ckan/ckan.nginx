@@ -29,7 +29,7 @@ server {
     }
 
     location /additionalfonts/LTe50136.ttf {
-        alias /var/lib/ckan/webassets/vendor/LTe50136.ttf;
+        alias /srv/app/customwebassets/LTe50136.ttf;
         gzip_static on;
         expires 24h;
         add_header Cache-Control public;
