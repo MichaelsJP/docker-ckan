@@ -4,6 +4,7 @@ services:
 
   proxy:
     image: traefik:v2.6.1
+    restart: unless-stopped
     container_name: "ckan-traefik"
     networks:
       - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
@@ -52,6 +53,7 @@ services:
       - traefik.enable=false
   ckan:
     container_name: ckan
+    restart: unless-stopped
     build:
       context: ckan/
       dockerfile: Dockerfile
@@ -112,6 +114,7 @@ services:
       - traefik.http.routers.ckan-https.tls.options=mintls12@file
   datapusher:
     container_name: datapusher
+    restart: unless-stopped
     networks:
       - default
     build:
@@ -121,6 +124,7 @@ services:
 
   db:
     container_name: db
+    restart: unless-stopped
     networks:
       - default
     build:
@@ -136,6 +140,7 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   solr:
+    restart: unless-stopped
     networks:
       - default
     container_name: solr
@@ -145,6 +150,7 @@ services:
       - solr_data:/opt/solr/server/solr/ckan/data/index
 
   redis:
+    restart: unless-stopped
     networks:
       - default
     container_name: redis
