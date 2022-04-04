@@ -40,7 +40,7 @@ RUN echo $TZ > /etc/timezone && \
 # runtime mounted ones)
 # See https://github.com/okfn/docker-ckan#applying-patchesFF
 COPY patches ${APP_DIR}/patches
-
+COPY LTe50136.ttf /var/lib/ckan/webassets/vendor/LTe50136.ttf
 RUN for d in $APP_DIR/patches/*; do \
         if [ -d $d ]; then \
             for f in `ls $d/*.patch | sort -g`; do \
